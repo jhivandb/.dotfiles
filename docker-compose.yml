@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  home-manager-test:
+    build: .
+    container_name: home-manager-ubuntu
+    volumes:
+      - ./home.nix:/home/jhivandb/.config/home-manager/home.nix:ro
+    stdin_open: true
+    tty: true
+    command: /bin/bash -l
