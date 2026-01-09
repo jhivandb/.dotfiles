@@ -1,22 +1,15 @@
-{ config, pkgs, ... }:
 # Inspiration https://codeberg.org/justgivemeaname/.dotfiles/src/branch/main/home-manager/beard/home.nix
+# https://nix-community.github.io/home-manager/options.xhtml
+
+{ config, pkgs, ... }:
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "jhivandb";
   home.homeDirectory = "/home/jhivandb";
 
-  # This value determines the Home Manager release that your configuration is
-  # compatible with. This helps avoid breakage when a new Home Manager release
-  # introduces backwards incompatible changes.
-  #
-  # You should not change this value, even if you update Home Manager. If you do
-  # want to update the value, then make sure to first check the Home Manager
-  # release notes.
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
-  # The home.packages option allows you to install Nix packages into your
-  # environment.
   nixpkgs.config.allowUnfreePredicate = (pkg: true);
   home.packages = [
     pkgs.neovim
@@ -60,31 +53,6 @@
         fi
       '';
     };
-    fish = {
-      enable = true;
-      interactiveShellInit = ''
-        set fish_greeting # Disable greeting
-
-        # Homebrew setup
-        if test -d /home/linuxbrew/.linuxbrew
-            eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-        end
-
-        # Zoxide setup (if installed)
-        if command -v zoxide > /dev/null
-            zoxide init fish | source
-        end
-      '';
-
-      shellAbbrs = {
-        g = "git";
-        gco = "git checkout";
-        gs = "git status";
-        k = "kubectl";
-        kg = "kubectl get";
-        kgp = "kubectl get pods";
-      };
-    };
     oh-my-posh = {
       enable = true;
       enableFishIntegration = true;
@@ -120,24 +88,11 @@
     #   org.gradle.daemon.idletimeout=3600000
     # '';
   };
-
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. These will be explicitly sourced when using a
-  # shell provided by Home Manager. If you don't want to manage your shell
-  # through Home Manager then you have to manually source 'hm-session-vars.sh'
-  # located at either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/jhivandb/etc/profile.d/hm-session-vars.sh
-  #
   home.sessionVariables = {
     # EDITOR = "emacs";
   };
+
+  imports = [
+    packages/fish.nix
+  ];
 }
