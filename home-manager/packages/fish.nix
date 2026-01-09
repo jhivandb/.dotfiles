@@ -29,6 +29,7 @@
         k = "kubectl";
         kg = "kubectl get";
         kgp = "kubectl get pods";
+        dcmp = "docker-compose";
       };
     };
   };

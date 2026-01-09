@@ -14,7 +14,7 @@
   home.packages = [
     pkgs.neovim
     pkgs.bat
-    pkgs.helm
+    pkgs.kubernetes-helm
     pkgs.kubectx
     pkgs.gh
     pkgs.kind
