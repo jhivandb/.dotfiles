@@ -21,11 +21,28 @@
     pkgs.kubectl
     pkgs.zoxide
     pkgs.babelfish
-    pkgs.zed-editor
     pkgs.micro
     pkgs.nerd-fonts.fira-code
     pkgs.claude-code
     pkgs.nil
+    pkgs.go
+    pkgs.podman
+    pkgs.colima
+    pkgs.mkcert
+    pkgs.protobuf
+    pkgs.fd
+    pkgs.fzf
+    pkgs.jq
+    pkgs.yq
+    pkgs.xh
+    pkgs.tree-sitter
+    # GUI Applications
+    pkgs.firefox
+    pkgs.zed-editor
+    pkgs.vscode
+    pkgs.discord
+    pkgs.spotify
+    pkgs.dbeaver-bin
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of

@@ -22,6 +22,12 @@
         end
       '';
 
+
+      plugins = [
+            {name = "nvm"; src = pkgs.fishPlugins.nvm.src; }
+            {name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
+      ];
+
       shellAbbrs = {
         g = "git";
         gco = "git checkout";
