@@ -31,6 +31,9 @@
         kgp = "kubectl get pods";
         dcmp = "docker-compose";
       };
+      shellAliases = {
+        ze = "zeditor";
+      };
     };
   };
 

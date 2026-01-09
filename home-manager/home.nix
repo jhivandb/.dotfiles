@@ -56,7 +56,7 @@
     oh-my-posh = {
       enable = true;
       enableFishIntegration = true;
-      useTheme = "amro";
+      configFile = ./shrewd_minimal.omp.json;
     };
     kitty = {
       enable = true;
