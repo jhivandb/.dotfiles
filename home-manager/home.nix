@@ -5,8 +5,8 @@
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
-  home.username = "jhivandb";
-  home.homeDirectory = "/home/jhivandb";
+  home.username = builtins.getEnv "USER";
+  home.homeDirectory = builtins.getEnv "HOME";
 
   home.stateVersion = "25.11"; # Please read the comment before changing.
 
@@ -25,6 +25,7 @@
     pkgs.micro
     pkgs.nerd-fonts.fira-code
     pkgs.claude-code
+    pkgs.nil
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
