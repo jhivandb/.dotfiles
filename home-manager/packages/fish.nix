@@ -15,11 +15,10 @@
         if test -d /home/linuxbrew/.linuxbrew
             eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         end
-
-        # Zoxide setup (if installed)
-        if command -v zoxide > /dev/null
-            zoxide init fish | source
+        if test -d /opt/homebrew
+            eval "$(/opt/homebrew/bin/brew shellenv)"
         end
+
       '';
 
 
