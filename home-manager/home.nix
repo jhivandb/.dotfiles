@@ -2,6 +2,10 @@
 # https://nix-community.github.io/home-manager/options.xhtml
 
 { config, pkgs, ... }:
+let
+  # Set to true to install GUI applications
+  installGuiApps = false;
+in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -12,7 +16,6 @@
 
   nixpkgs.config.allowUnfreePredicate = (pkg: true);
   home.packages = [
-    pkgs.neovim
     pkgs.bat
     pkgs.kubernetes-helm
     pkgs.kubectx
@@ -36,6 +39,7 @@
     pkgs.yq
     pkgs.xh
     pkgs.tree-sitter
+  ] ++ pkgs.lib.optionals installGuiApps [
     # GUI Applications
     pkgs.firefox
     pkgs.zed-editor
@@ -43,6 +47,7 @@
     pkgs.discord
     pkgs.spotify
     pkgs.dbeaver-bin
+  ] ++ [
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -90,6 +95,10 @@
         };
       };
     };
+    zoxide = {
+      enable = true;
+      enableFishIntegration = true;
+    };
   };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -108,6 +117,7 @@
   };
   home.sessionVariables = {
     # EDITOR = "emacs";
+    HOME_MANAGER_CONFIG = "${config.home.homeDirectory}/.dotfiles/home-manager/home.nix";
   };
 
   imports = [
