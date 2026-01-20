@@ -4,7 +4,46 @@
 { config, pkgs, ... }:
 let
   # Set to true to install GUI applications
-  installGuiApps = false;
+  installGuiApps = true;
+
+  # Helper function to create out-of-store symlinks for a directory
+  # Usage: mkHomeSymlinks "claude" creates ~/.claude/* -> ./claude/*
+  mkHomeSymlinks = dirName:
+    let
+      inherit (config.lib.file) mkOutOfStoreSymlink;
+
+      # Absolute path for symlink targets (outside Nix store)
+      absPath = "${config.home.homeDirectory}/.dotfiles/home-manager/${dirName}";
+
+      # Nix path for reading directory contents
+      nixPath = ./. + "/${dirName}";
+
+      # Recursively find all files in a directory
+      readDirRecursive = relPath: currentPath:
+        currentPath
+        |> builtins.readDir
+        |> builtins.attrNames
+        |> map (name:
+          let
+            entryType = (builtins.readDir currentPath).${name};
+            newRelPath = if relPath == "" then name else "${relPath}/${name}";
+            newCurrentPath = "${currentPath}/${name}";
+          in
+          if entryType == "directory"
+          then readDirRecursive newRelPath newCurrentPath
+          else [ newRelPath ]
+        )
+        |> builtins.concatLists;
+
+      # Create home.file entry for each file
+      mkEntry = filePath: {
+        name = ".${dirName}/${filePath}";
+        value.source = mkOutOfStoreSymlink "${absPath}/${filePath}";
+      };
+    in
+    readDirRecursive "" nixPath
+    |> map mkEntry
+    |> builtins.listToAttrs;
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -103,18 +142,7 @@ in
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-  };
+  home.file = mkHomeSymlinks "claude";
   home.sessionVariables = {
     # EDITOR = "emacs";
     HOME_MANAGER_CONFIG = "${config.home.homeDirectory}/.dotfiles/home-manager/home.nix";

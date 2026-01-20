@@ -2,8 +2,8 @@
 
 {
 
-	home.packages = with pkgs; [
-	];
+  home.packages = with pkgs; [
+  ];
 
   programs = {
     fish = {
@@ -21,10 +21,15 @@
 
       '';
 
-
       plugins = [
-            {name = "nvm"; src = pkgs.fishPlugins.nvm.src; }
-            {name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
+        {
+          name = "nvm";
+          src = pkgs.fishPlugins.nvm.src;
+        }
+        {
+          name = "fzf-fish";
+          src = pkgs.fishPlugins.fzf-fish.src;
+        }
       ];
 
       shellAbbrs = {
@@ -37,7 +42,8 @@
         dcmp = "docker-compose";
       };
       shellAliases = {
-        ze = "zeditor";
+        zed = "zeditor";
+        gcm = "git commit -m";
       };
     };
   };
