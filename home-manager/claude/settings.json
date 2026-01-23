@@ -6,7 +6,7 @@
       "Bash(az monitor log-analytics query:*)"
     ]
   },
-  "model": "opus",
+  "model": "sonnet",
   "statusLine": {
     "type": "command",
     "command": "/Users/jhivan/Developer/play/status-line/status-line"
