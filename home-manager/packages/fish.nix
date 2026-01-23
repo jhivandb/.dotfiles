@@ -31,7 +31,9 @@
           src = pkgs.fishPlugins.fzf-fish.src;
         }
       ];
-
+      functions = {
+        b64d = "echo -n $argv | base64 -d";
+      };
       shellAbbrs = {
         g = "git";
         gco = "git checkout";
