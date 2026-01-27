@@ -8,7 +8,8 @@ let
 
   # Helper function to create out-of-store symlinks for a directory
   # Usage: mkHomeSymlinks "claude" creates ~/.claude/* -> ./claude/*
-  mkHomeSymlinks = dirName:
+  mkHomeSymlinks =
+    dirName:
     let
       inherit (config.lib.file) mkOutOfStoreSymlink;
 
@@ -19,19 +20,19 @@ let
       nixPath = ./. + "/${dirName}";
 
       # Recursively find all files in a directory
-      readDirRecursive = relPath: currentPath:
+      readDirRecursive =
+        relPath: currentPath:
         currentPath
         |> builtins.readDir
         |> builtins.attrNames
-        |> map (name:
+        |> map (
+          name:
           let
             entryType = (builtins.readDir currentPath).${name};
             newRelPath = if relPath == "" then name else "${relPath}/${name}";
             newCurrentPath = "${currentPath}/${name}";
           in
-          if entryType == "directory"
-          then readDirRecursive newRelPath newCurrentPath
-          else [ newRelPath ]
+          if entryType == "directory" then readDirRecursive newRelPath newCurrentPath else [ newRelPath ]
         )
         |> builtins.concatLists;
 
@@ -41,9 +42,7 @@ let
         value.source = mkOutOfStoreSymlink "${absPath}/${filePath}";
       };
     in
-    readDirRecursive "" nixPath
-    |> map mkEntry
-    |> builtins.listToAttrs;
+    readDirRecursive "" nixPath |> map mkEntry |> builtins.listToAttrs;
 in
 {
   # Home Manager needs a bit of information about you and the paths it should
@@ -78,7 +77,9 @@ in
     pkgs.yq
     pkgs.xh
     pkgs.tree-sitter
-  ] ++ pkgs.lib.optionals installGuiApps [
+    pkgs.nixd
+  ]
+  ++ pkgs.lib.optionals installGuiApps [
     # GUI Applications
     pkgs.firefox
     pkgs.zed-editor
@@ -86,7 +87,8 @@ in
     pkgs.discord
     pkgs.spotify
     pkgs.dbeaver-bin
-  ] ++ [
+  ]
+  ++ [
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -102,8 +104,8 @@ in
   ];
 
   programs = {
-  # Let Home Manager install and manage itself.
-    home-manager =  {
+    # Let Home Manager install and manage itself.
+    home-manager = {
       enable = true;
     };
     bash = {
@@ -126,7 +128,7 @@ in
       shellIntegration.enableFishIntegration = true;
     };
     git = {
-      enable =  true;
+      enable = true;
       settings = {
         user = {
           name = "Jhivan de Benoit";
