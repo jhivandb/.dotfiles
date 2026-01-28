@@ -30,6 +30,14 @@
           name = "fzf-fish";
           src = pkgs.fishPlugins.fzf-fish.src;
         }
+        {
+          name = "sdkman-for-fish";
+          src = pkgs.fishPlugins.sdkman-for-fish.src;
+        }
+        {
+          name = "fzf-fish";
+          src = pkgs.fishPlugins.fzf-fish.src;
+        }
       ];
       functions = {
         b64d = "echo -n $argv | base64 -d";

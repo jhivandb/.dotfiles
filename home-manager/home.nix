@@ -78,6 +78,7 @@ in
     pkgs.xh
     pkgs.tree-sitter
     pkgs.nixd
+    pkgs.jdk
   ]
   ++ pkgs.lib.optionals installGuiApps [
     # GUI Applications
