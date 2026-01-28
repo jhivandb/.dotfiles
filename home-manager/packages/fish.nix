@@ -35,8 +35,16 @@
           src = pkgs.fishPlugins.sdkman-for-fish.src;
         }
         {
-          name = "fzf-fish";
-          src = pkgs.fishPlugins.fzf-fish.src;
+          name = "fish-you-should-use";
+          src = pkgs.fishPlugins.fish-you-should-use.src;
+        }
+        {
+          name = "done";
+          src = pkgs.fishPlugins.done.src;
+        }
+        {
+          name = "bass";
+          src = pkgs.fishPlugins.bass.src;
         }
       ];
       functions = {
