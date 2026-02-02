@@ -4,6 +4,7 @@ description: Create an Application Normal Change Request issue in wso2-enterpris
 argument-hint: [title]
 disable-model-invocation: false
 allowed-tools: Bash(gh api repos/wso2-enterprise/choreo/contents/.github/ISSUE_TEMPLATE/*)
+context: fork
 ---
 
 # Create Application Change Request
