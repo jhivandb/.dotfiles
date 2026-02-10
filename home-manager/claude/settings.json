@@ -168,7 +168,11 @@
       "Bash(unzip :*)",
       "Bash(unzip -l :*)",
       "Bash(echo :* | base64:*)",
-      "Bash(echo :* | base64 -d:*)"
+      "Bash(echo :* | base64 -d:*)",
+      "Bash(az log-analytics query:*)",
+      "Bash(az monitor log-analytics query:*)",
+      "Bash(cat *)",
+      "Read"
     ]
   },
   "model": "opus",

@@ -3,8 +3,6 @@
 
 { config, pkgs, ... }:
 let
-  # Set to true to install GUI applications
-  installGuiApps = true;
 
   # Helper function to create out-of-store symlinks for a directory
   # Usage: mkHomeSymlinks "claude" creates ~/.claude/* -> ./claude/*
@@ -79,15 +77,6 @@ in
     pkgs.tree-sitter
     pkgs.nixd
     pkgs.jdk
-  ]
-  ++ pkgs.lib.optionals installGuiApps [
-    # GUI Applications
-    pkgs.firefox
-    pkgs.zed-editor
-    pkgs.vscode
-    pkgs.discord
-    pkgs.spotify
-    pkgs.dbeaver-bin
   ]
   ++ [
     # # It is sometimes useful to fine-tune packages, for example, by applying

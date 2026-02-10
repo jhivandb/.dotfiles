@@ -60,7 +60,6 @@
         dcmp = "docker-compose";
       };
       shellAliases = {
-        zed = "zeditor";
         gcm = "git commit -m";
       };
     };
