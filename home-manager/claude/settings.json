@@ -70,6 +70,7 @@
       "Bash(ll:*)",
       "Bash(cat :*)",
       "Bash(cat -n :*)",
+      "Bash(:*cat :*)",
       "Bash(less :*)",
       "Bash(more :*)",
       "Bash(head :*)",
@@ -168,7 +169,8 @@
       "Bash(unzip :*)",
       "Bash(unzip -l :*)",
       "Bash(echo :* | base64:*)",
-      "Bash(echo :* | base64 -d:*)"
+      "Bash(echo :* | base64 -d:*)",
+      "Bash(az monitor log-analytics :*)"
     ]
   },
   "model": "opus",
@@ -179,6 +181,38 @@
   "enabledPlugins": {
     "gopls-lsp@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/skill-forced-eval-hook.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/code-simplifier-reminder-hook.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/code-simplifier-reminder-hook.sh"
+          }
+        ]
+      }
+    ]
   },
   "deny": [
     "Bash(rm -rf /*)",
