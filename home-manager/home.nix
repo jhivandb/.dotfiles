@@ -6,6 +6,8 @@ let
 
   # Helper function to create out-of-store symlinks for a directory
   # Usage: mkHomeSymlinks "claude" creates ~/.claude/* -> ./claude/*
+  # NOTE: This requires ~/.dotfiles to exist as a symlink to the actual dotfiles location.
+  #       e.g., ln -s ~/Developer/.dotfiles ~/.dotfiles
   mkHomeSymlinks =
     dirName:
     let

@@ -172,7 +172,7 @@
       "Bash(echo :* | base64 -d:*)",
       "Bash(az log-analytics query:*)",
       "Bash(az monitor log-analytics query:*)",
-      "Bash(cat *)",
+      "Bash(cat :*)",
       "Read"
     ]
   },
