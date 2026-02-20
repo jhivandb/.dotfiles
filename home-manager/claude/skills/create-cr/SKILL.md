@@ -1,6 +1,6 @@
 ---
 name: create-cr
-description: Create an Application Normal Change Request issue in wso2-enterprise/choreo. Use when the user wants to create a change request, CR, or application normal change.
+description: Create an Application Normal Change Request issue in wso2-enterprise/choreo. Use when the user wants to create a change request, CR, or application normal change. Accepts optional title argument (e.g., /create-cr Take full dump of GA_DB). Always applies labels "Application,Normal Change Request".
 argument-hint: [title]
 disable-model-invocation: false
 allowed-tools: Bash(gh api repos/wso2-enterprise/choreo/contents/.github/ISSUE_TEMPLATE/*)
@@ -9,140 +9,44 @@ context: fork
 
 # Create Application Change Request
 
-Creates an Application Normal Change Request issue in the wso2-enterprise/choreo repository using the official template.
+## Workflow
 
-## Instructions
-
-When this skill is invoked, follow these steps in order:
-
-### Step 1: Fetch the Current Template
-
-First, retrieve the latest application normal change request template to ensure you use the correct format:
+### 1. Fetch Template
 
 ```bash
 gh api repos/wso2-enterprise/choreo/contents/.github/ISSUE_TEMPLATE/10_application_normal_change_request.md --jq '.content' | base64 -d
 ```
 
-Review the template structure. It typically contains:
-- Description field
-- Type of Change checkboxes
-- Testing section
-- Checklist for environments and code quality
+Use this template structure for the issue body.
 
-### Step 2: Gather Information
+### 2. Gather Information
 
-If the user provided arguments with the skill invocation (e.g., `/create-cr Take full dump of GA_DB`), use that as the title. Otherwise, ask the user for:
+If title provided as argument, use it. Otherwise ask for:
 
-**Required:**
-- **Title**: Clear, concise title for the change request
-- **Description**: What needs to be changed, why, and what's the scope
+**Required:** Title, Description (what/why/scope)
 
-**Important:**
-- **Execution Steps**: Specific commands or procedures to execute the change (use code blocks with bash syntax)
-- **Type of Change**: Which checkboxes apply:
-  - Infrastructure or component change
-  - Breaking change
-  - Requires documentation update
+**If applicable:** Execution steps (bash code blocks), Type of Change selections
 
-**Optional:**
-- **Testing details**: How to verify the change
-- **Dependencies**: Prerequisites or requirements
-- **Risk Assessment**: Impact level and mitigation
-- **Success Criteria**: What defines success
-
-### Step 3: Format the Issue Body
-
-Structure the issue body following the template format:
-
-```markdown
-### Description
-[User's description here - include background, purpose, and scope]
-
-### Type of Change
-- [x or ] Infrastructure or component change
-- [x or ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [x or ] change requires a documentation update
-
-### Execution Steps
-
-[If provided, format execution steps with proper bash code blocks]
-
-Example:
-#### 1. Step Name
-\`\`\`bash
-# Command description
-command -option value
-\`\`\`
-
-### Testing
-[Testing details if provided, otherwise use template placeholder]
-
-### Risk Assessment
-[If provided, include risk level and details]
-
-### Checklist
-Change tested in below non-production environments
-- [ ] Staging
-- [ ] Development
-- [ ] RND
-- [ ] Sandbox
-
-Other
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my own code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
-- [ ] I have checked my code and corrected any misspellings
-```
-
-### Step 4: Create the Issue
-
-Use the GitHub CLI to create the issue in the wso2-enterprise/choreo repository:
+### 3. Create Issue
 
 ```bash
 gh issue create --repo wso2-enterprise/choreo \
-  --title "TITLE_HERE" \
+  --title "TITLE" \
   --label "Application,Normal Change Request" \
-  --body "FORMATTED_BODY_HERE"
+  --body "BODY"
 ```
 
-**Important:**
-- Always use `--repo wso2-enterprise/choreo`
-- Always include labels: `"Application,Normal Change Request"`
-- Escape any special characters in the body (quotes, backticks, etc.)
+Escape special characters in body (quotes, backticks).
 
-### Step 5: Return Results
+### 4. Return Results
 
-After successful creation, provide:
-- The issue URL (e.g., https://github.com/wso2-enterprise/choreo/issues/12345)
-- The issue number
-- A confirmation message
-
-Example output:
+Provide issue URL and number:
 ```
-✅ Created Application Normal Change Request: #12345
-🔗 https://github.com/wso2-enterprise/choreo/issues/12345
-
-Title: Take Full Database Dump of GA_DB
+Created CR #12345: https://github.com/wso2-enterprise/choreo/issues/12345
 ```
 
-## Tips
+## Domain Knowledge
 
-- Keep the title concise (under 80 characters)
-- Be specific in execution steps with actual commands
-- Check appropriate Type of Change boxes based on the description
-- For database operations, infrastructure changes, or deployments, mark "Infrastructure or component change"
-- For read-only queries or investigation tasks, uncheck "Breaking change"
-- If in doubt about any field, ask the user for clarification
-
-## Example Invocations
-
-```
-/create-cr Take full database dump of GA_DB
-/create-cr
-/create-cr Update memory limits for Global Adapter
-```
+- Database operations, infrastructure changes, deployments → mark "Infrastructure or component change"
+- Read-only queries, investigations → uncheck "Breaking change"
+- Keep titles under 80 characters
