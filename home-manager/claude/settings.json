@@ -214,9 +214,8 @@
     "command": "/Users/jhivan/Developer/play/status-line/status-line"
   },
   "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
-    "jdtls@claude-code-lsps": true
+    "superpowers@claude-plugins-official": true
   },
   "deny": [
     "Bash(rm -rf /*)",

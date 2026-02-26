@@ -64,7 +64,6 @@ in
     pkgs.babelfish
     pkgs.micro
     pkgs.nerd-fonts.fira-code
-    pkgs.claude-code
     pkgs.nil
     pkgs.go
     pkgs.podman
@@ -101,10 +100,21 @@ in
       enable = true;
     };
     bash = {
+      enable = true;
       initExtra = ''
-        if [[ $(${pkgs.procps}/bin/ps --no-header --pid=$PPID --format=comm) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
+        if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
         then
           shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
+          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
+        fi
+      '';
+    };
+    zsh = {
+      enable = true;
+      initContent = ''
+        if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${ZSH_EXECUTION_STRING} ]]
+        then
+          [[ -o login ]] && LOGIN_OPTION='--login' || LOGIN_OPTION=""
           exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
         fi
       '';
