@@ -59,17 +59,21 @@ fi
 
 # Stage 2: Destructive keyword scan
 # If the command contains destructive keywords, fall through to user prompt
+# Note: \b treats hyphens as word boundaries, so --force-recreate matches "force".
+# This is intentionally conservative -- when in doubt, fall through to user prompt.
 DESTRUCTIVE_PATTERN="\b(delete|remove|destroy|drop|clear|wipe|purge|forget|erase|reset|force|push|deploy|publish|execute|eval|merge|rebase|truncate|kill)\b"
-if echo "$COMMAND" | grep -qiE "$DESTRUCTIVE_PATTERN"; then
+MATCHED_KEYWORD=$(echo "$COMMAND" | grep -oiE "$DESTRUCTIVE_PATTERN" | head -1)
+if [[ -n "$MATCHED_KEYWORD" ]]; then
   mkdir -p "$LOG_DIR"
   TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-  echo "[$TIMESTAMP] DESTRUCTIVE | $COMMAND" >> "$LOG_FILE"
+  echo "[$TIMESTAMP] DESTRUCTIVE ($MATCHED_KEYWORD) | $COMMAND" >> "$LOG_FILE"
   exit 0
 fi
 
 # Ensure log directory exists
 mkdir -p "$LOG_DIR"
 
+# Timestamp captures evaluation start time (before Haiku call, not decision time)
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Build the prompt for Haiku
