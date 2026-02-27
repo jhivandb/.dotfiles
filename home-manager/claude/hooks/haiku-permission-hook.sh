@@ -115,13 +115,8 @@ case "$DECISION" in
       --arg reason "Haiku: ${REASON}" \
       '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "allow", permissionDecisionReason: $reason}}'
     ;;
-  DENY)
-    jq -n \
-      --arg reason "Haiku: ${REASON}" \
-      '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
-    ;;
   *)
-    # UNSURE or anything unexpected: silent fall-through
+    # UNSURE or anything unexpected: silent fall-through (user gets prompted)
     exit 0
     ;;
 esac
