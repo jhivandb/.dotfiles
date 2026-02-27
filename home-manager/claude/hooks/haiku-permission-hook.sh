@@ -62,7 +62,7 @@ fi
 # Note: \b treats hyphens as word boundaries, so --force-recreate matches "force".
 # This is intentionally conservative -- when in doubt, fall through to user prompt.
 DESTRUCTIVE_PATTERN="\b(delete|remove|destroy|drop|clear|wipe|purge|forget|erase|reset|force|push|deploy|publish|execute|eval|merge|rebase|truncate|kill)\b"
-MATCHED_KEYWORD=$(echo "$COMMAND" | grep -oiE "$DESTRUCTIVE_PATTERN" | head -1)
+MATCHED_KEYWORD=$(echo "$COMMAND" | grep -oiE "$DESTRUCTIVE_PATTERN" | head -1 || true)
 if [[ -n "$MATCHED_KEYWORD" ]]; then
   mkdir -p "$LOG_DIR"
   TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
