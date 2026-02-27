@@ -71,8 +71,8 @@ Rules:
 Respond with exactly one word on the first line: ALLOW, DENY, or UNSURE
 Then a brief reason on the second line."
 
-# Call Haiku via claude CLI pipe mode
-HAIKU_RESPONSE=$(echo "$PROMPT" | timeout 10 claude -p --model haiku 2>/dev/null) || {
+# Call Haiku via claude CLI pipe mode (unset CLAUDECODE to allow nested invocation)
+HAIKU_RESPONSE=$(echo "$PROMPT" | env -u CLAUDECODE claude -p --model haiku 2>/dev/null) || {
   # If claude CLI fails, log and fall through
   echo "[$TIMESTAMP] ERROR | $COMMAND" >> "$LOG_FILE"
   exit 0
