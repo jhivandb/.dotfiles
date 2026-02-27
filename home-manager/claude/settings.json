@@ -173,7 +173,9 @@
       "Bash(az log-analytics query:*)",
       "Bash(az monitor log-analytics query:*)",
       "Bash(cat :*)",
-      "Read"
+      "Read",
+      "WebSearch",
+      "WebFetch"
     ]
   },
   "model": "opus",
@@ -184,26 +186,6 @@
           {
             "type": "command",
             "command": "~/.claude/hooks/skill-forced-eval-hook.sh"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/code-simplifier-reminder-hook.sh"
-          }
-        ]
-      },
-      {
-        "matcher": "Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.claude/hooks/code-simplifier-reminder-hook.sh"
           }
         ]
       }
