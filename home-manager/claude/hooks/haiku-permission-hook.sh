@@ -15,6 +15,12 @@ LOG_FILE="${LOG_DIR}/permissions.log"
 # Read stdin JSON
 INPUT=$(cat)
 
+# Verify this is a Bash tool call
+TOOL_NAME=$(echo "$INPUT" | jq -r '.tool_name // empty')
+if [[ "$TOOL_NAME" != "Bash" ]]; then
+  exit 0
+fi
+
 # Extract the command from tool_input
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 
@@ -66,7 +72,7 @@ Respond with exactly one word on the first line: ALLOW, DENY, or UNSURE
 Then a brief reason on the second line."
 
 # Call Haiku via claude CLI pipe mode
-HAIKU_RESPONSE=$(echo "$PROMPT" | claude -p --model haiku 2>/dev/null) || {
+HAIKU_RESPONSE=$(echo "$PROMPT" | timeout 10 claude -p --model haiku 2>/dev/null) || {
   # If claude CLI fails, log and fall through
   echo "[$TIMESTAMP] ERROR | $COMMAND" >> "$LOG_FILE"
   exit 0
@@ -81,26 +87,14 @@ echo "[$TIMESTAMP] $DECISION | $COMMAND" >> "$LOG_FILE"
 
 case "$DECISION" in
   ALLOW)
-    cat <<ENDJSON
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PreToolUse",
-    "permissionDecision": "allow",
-    "permissionDecisionReason": "Haiku: ${REASON//\"/\\\"}"
-  }
-}
-ENDJSON
+    jq -n \
+      --arg reason "Haiku: ${REASON}" \
+      '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "allow", permissionDecisionReason: $reason}}'
     ;;
   DENY)
-    cat <<ENDJSON
-{
-  "hookSpecificOutput": {
-    "hookEventName": "PreToolUse",
-    "permissionDecision": "deny",
-    "permissionDecisionReason": "Haiku: ${REASON//\"/\\\"}"
-  }
-}
-ENDJSON
+    jq -n \
+      --arg reason "Haiku: ${REASON}" \
+      '{hookSpecificOutput: {hookEventName: "PreToolUse", permissionDecision: "deny", permissionDecisionReason: $reason}}'
     ;;
   *)
     # UNSURE or anything unexpected: silent fall-through
