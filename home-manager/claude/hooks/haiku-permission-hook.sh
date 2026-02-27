@@ -69,16 +69,23 @@ mkdir -p "$LOG_DIR"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 # Build the prompt for Haiku
-PROMPT="You are a security evaluator for CLI commands. Evaluate whether this command is non-destructive and safe to execute automatically.
+PROMPT="You are a security evaluator for CLI commands. Evaluate whether this command is safe to auto-approve without user confirmation.
 
 Command: ${COMMAND}
 
-Rules:
-- ALLOW: Read-only operations, listing, querying, fetching data, non-destructive actions
-- DENY: Destructive operations (delete, force push, drop, truncate, merge, rebase), privilege escalation, credential exposure
-- UNSURE: Anything you are not confident about
+SAFE patterns (auto-approve if the command matches these behaviors):
+- get, list, read, retrieve, fetch, search, find, query
+- check, status, health, stats, analyze
+- view, show, describe, inspect
+- Additive-only operations (store, remember, ingest)
+- Context/summary retrieval
 
-Respond with exactly one word on the first line: ALLOW, DENY, or UNSURE
+Rules:
+- ALLOW: Command is clearly read-only, informational, or additive-only
+- UNSURE: Anything you are not fully confident is safe
+
+You MUST respond conservatively. If there is ANY doubt, respond UNSURE.
+Respond with exactly one word on the first line: ALLOW or UNSURE
 Then a brief reason on the second line."
 
 # Call Haiku via claude CLI pipe mode
