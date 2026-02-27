@@ -53,6 +53,16 @@ if [[ "$MATCHED" != "true" ]]; then
   exit 0
 fi
 
+# Stage 2: Destructive keyword scan
+# If the command contains destructive keywords, fall through to user prompt
+DESTRUCTIVE_PATTERN="\b(delete|remove|destroy|drop|clear|wipe|purge|forget|erase|reset|force|push|deploy|publish|execute|eval|merge|rebase|truncate|kill)\b"
+if echo "$COMMAND" | grep -qiE "$DESTRUCTIVE_PATTERN"; then
+  mkdir -p "$LOG_DIR"
+  TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+  echo "[$TIMESTAMP] DESTRUCTIVE | $COMMAND" >> "$LOG_FILE"
+  exit 0
+fi
+
 # Ensure log directory exists
 mkdir -p "$LOG_DIR"
 
@@ -65,7 +75,7 @@ Command: ${COMMAND}
 
 Rules:
 - ALLOW: Read-only operations, listing, querying, fetching data, non-destructive actions
-- DENY: Destructive operations (delete, force push, drop, truncate), privilege escalation, credential exposure
+- DENY: Destructive operations (delete, force push, drop, truncate, merge, rebase), privilege escalation, credential exposure
 - UNSURE: Anything you are not confident about
 
 Respond with exactly one word on the first line: ALLOW, DENY, or UNSURE
