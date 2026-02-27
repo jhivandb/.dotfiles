@@ -71,8 +71,15 @@ Rules:
 Respond with exactly one word on the first line: ALLOW, DENY, or UNSURE
 Then a brief reason on the second line."
 
-# Call Haiku via claude CLI pipe mode (unset CLAUDECODE to allow nested invocation)
-HAIKU_RESPONSE=$(echo "$PROMPT" | env -u CLAUDECODE claude -p --model haiku 2>/dev/null) || {
+# Call Haiku via claude CLI pipe mode
+# --setting-sources "" prevents inheriting hooks from ~/.claude/settings.json
+# --max-turns 1 ensures single response, --no-session-persistence avoids writing session files
+HAIKU_RESPONSE=$(echo "$PROMPT" | env -u CLAUDECODE claude -p \
+  --model haiku \
+  --setting-sources "" \
+  --max-turns 1 \
+  --no-session-persistence \
+  2>/dev/null) || {
   # If claude CLI fails, log and fall through
   echo "[$TIMESTAMP] ERROR | $COMMAND" >> "$LOG_FILE"
   exit 0
