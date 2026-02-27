@@ -1,10 +1,14 @@
 #!/bin/bash
-# PreToolUse hook: evaluates Bash commands against configurable patterns
-# and uses Claude Haiku to decide whether to allow, deny, or fall through.
+# PreToolUse hook: auto-approves safe Bash commands, falls through for everything else.
+#
+# Three-stage evaluation:
+#   1. Pre-filter: haiku-filter.json patterns gate which commands enter evaluation
+#   2. Destructive keyword scan: commands with destructive words fall through (user prompted)
+#   3. Haiku evaluation: enriched prompt decides ALLOW (auto-approve) or fall-through
 #
 # Stdin: JSON with tool_name, tool_input.command, etc.
-# Stdout: hookSpecificOutput JSON for allow/deny, or nothing for fall-through
-# Exit 0 always (fall-through on error/unsure)
+# Stdout: hookSpecificOutput JSON for allow, or nothing for fall-through
+# Exit 0 always (fall-through on error/unsure/destructive)
 
 set -euo pipefail
 
