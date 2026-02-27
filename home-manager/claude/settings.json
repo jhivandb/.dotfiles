@@ -207,6 +207,17 @@
           }
         ]
       }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/haiku-permission-hook.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
