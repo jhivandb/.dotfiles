@@ -131,6 +131,9 @@ in
     };
     git = {
       enable = true;
+      ignores = [
+        "permissions.log"
+      ];
       settings = {
         user = {
           name = "Jhivan de Benoit";
