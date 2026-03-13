@@ -132,12 +132,20 @@ in
     git = {
       enable = true;
       ignores = [
-        "permissions.log"
+        "**/.claude/settings.local.json"
+        "**/.claude/permissions.log"
       ];
       settings = {
         user = {
           name = "Jhivan de Benoit";
           email = "jhivanb@gmail.com";
+        };
+        signing = {
+          key = "A9B895CB62225828C0F5FA486A65CE0F3CBDA54A";
+          signByDefault = true;
+        };
+        extraConfig = {
+          gpg.program = "gpg"; # or the full path from `which gpg`
         };
       };
     };

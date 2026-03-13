@@ -178,7 +178,6 @@
       "WebFetch"
     ]
   },
-  "model": "opus[1m]",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -208,8 +207,9 @@
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": true
+    "superpowers@claude-plugins-official": false
   },
+  "skipDangerousModePermissionPrompt": true,
   "deny": [
     "Bash(rm -rf /*)",
     "Bash(rm -rf /)",
@@ -330,5 +330,7 @@
     "Bash(exec < /dev/tcp/:*)",
     "Bash(exec > /dev/tcp/:*)",
     "Bash(exec 3<>/dev/tcp/:*)"
-  ]
+  ],
+  "effortLevel": "high",
+  "model": "opus[1m]"
 }
