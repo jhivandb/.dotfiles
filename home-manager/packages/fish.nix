@@ -61,6 +61,7 @@
       };
       shellAliases = {
         gcm = "git commit -m";
+        gemi = "gemini --model gemini-3.1-pro-preview";
       };
     };
   };
