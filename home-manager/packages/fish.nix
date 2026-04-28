@@ -61,7 +61,7 @@
       };
       shellAliases = {
         gcm = "git commit -m";
-        gemi = "gemini --model gemini-3.1-pro-preview";
+        opus46 = "claude --model 'claude-opus-4-6[1m]'";
       };
     };
   };
