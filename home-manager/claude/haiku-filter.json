@@ -1,9 +1,0 @@
-{
-  "patterns": [
-    "^gh (api|pr|issue|release|workflow)",
-    "&&",
-    "\\|\\|",
-    "\\|",
-    ";"
-  ]
-}

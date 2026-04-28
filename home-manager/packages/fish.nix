@@ -61,7 +61,7 @@
       };
       shellAliases = {
         gcm = "git commit -m";
-        opus46 = "claude --model 'claude-opus-4-6[1m]'";
+        op46 = "claude --model 'claude-opus-4-6[1m]'";
       };
     };
   };
