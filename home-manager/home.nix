@@ -102,6 +102,8 @@ in
     bash = {
       enable = true;
       initExtra = ''
+        export SDKMAN_DIR="$HOME/.sdkman"
+        [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
         if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
         then
           shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
@@ -112,6 +114,8 @@ in
     zsh = {
       enable = true;
       initContent = ''
+        export SDKMAN_DIR="$HOME/.sdkman"
+        [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
         if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${ZSH_EXECUTION_STRING} ]]
         then
           [[ -o login ]] && LOGIN_OPTION='--login' || LOGIN_OPTION=""
