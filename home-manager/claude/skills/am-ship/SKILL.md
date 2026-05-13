@@ -1,6 +1,6 @@
 ---
 name: am-ship
-description: Git workflow for the agent-manager repo at /Users/jhivan/Developer/agent-manager. Use whenever the user asks to commit, push, ship, or open a PR while in that repo (or its worktrees). Runs the relevant `make` generators first, refuses to push to `upstream/*` (wso2 canonical), pushes to the user's fork, and matches the repo's commit-message style. Invoke explicitly via `/am-ship`.
+description: Git workflow and commit conventions for the agent-manager repo. Trigger when working inside the agent-manager repo or any git worktree whose common git dir is agent-manager (match on repo identity, not exact path) AND the task involves commits, commit messages, git history, pushing, shipping, or PRs. Also invoke explicitly via `/am-ship`.
 ---
 
 # am-ship — agent-manager git workflow
