@@ -10,13 +10,13 @@ Autonomous DX testing for `amctl`. Runs through the agent dev workflow as a real
 ## Prerequisites
 
 - Local agent-manager service is running
-- `./amctl` binary exists in `/Users/jhivan/Developer/agent-manager/cli/`
+- `amctl` is on PATH
 - User is already logged in (do NOT attempt login)
-- Use `./amctl` always — never the system PATH binary unless user explicitly says otherwise
+- Do NOT read internal source code unless a specific bug demands it — test as an outside user
 
 ## Workflow
 
-Run from `/Users/jhivan/Developer/agent-manager/cli/`.
+Run from the current working directory.
 
 ```dot
 digraph dx_test {
@@ -41,38 +41,33 @@ digraph dx_test {
 
 ### Phase 1: Discovery
 
-Scan what commands exist right now. Run `./amctl --help` and recurse into subcommands. Do NOT hardcode a command list — adapt to whatever is available at invocation time.
+Scan what commands exist right now. Run `amctl --help` and recurse into subcommands. Do NOT hardcode a command list — adapt to whatever is available at invocation time.
 
 Record the command tree for use in the consistency evaluation.
 
 ### Phase 2: Context Setup
 
 ```bash
-./amctl context show
-./amctl context org list
-./amctl context org use <pick-local>
-./amctl context instance list
-./amctl context instance use <pick-local>
-./amctl context show   # verify it stuck
+amctl context show
+amctl context org list
+amctl context org use <pick-local>
+amctl context instance list
+amctl context instance use <pick-local>
+amctl context show   # verify it stuck
 ```
 
 **Edge probes:**
-- `./amctl context org use nonexistent-org`
-- `./amctl context instance use ""`
-- `./amctl context show` with no context set (if possible to clear)
+- `amctl context org use nonexistent-org`
+- `amctl context instance use ""`
+- `amctl context show` with no context set (if possible to clear)
 
 ### Phase 3: Create Resources
 
 ```bash
-./amctl project create dx-test-<timestamp>
+amctl project create dx-test-<timestamp>
 ```
 
-If an agent deploy/create command exists:
-```bash
-./amctl agent deploy <appropriate-args>
-```
-
-If deploy doesn't exist yet, note its absence in the report and skip.
+Always attempt to deploy a sample agent. Discover required flags from `amctl agent deploy --help` and fill with plausible dummy values. If deploy fails, record the error verbatim — that's a finding.
 
 Use identifiable test names prefixed with `dx-test-` so cleanup is unambiguous.
 
@@ -84,22 +79,22 @@ Use identifiable test names prefixed with `dx-test-` so cleanup is unambiguous.
 ### Phase 4: Verify
 
 ```bash
-./amctl project list
-./amctl project get <id-from-create>
-./amctl agent list
-./amctl agent get <id>   # if agent was created
+amctl project list
+amctl project get <id-from-create>
+amctl agent list
+amctl agent get <id>   # if agent was created
 ```
 
 **Edge probes:**
-- `./amctl project get nonexistent-id`
-- `./amctl agent get ""`
-- `./amctl project list` output format vs `agent list` (consistency check)
+- `amctl project get nonexistent-id`
+- `amctl agent get ""`
+- `amctl project list` output format vs `agent list` (consistency check)
 
 ### Phase 5: Cleanup
 
 ```bash
-./amctl agent delete <id>    # if agent was created
-./amctl project delete <id>
+amctl agent delete <id>    # if agent was created
+amctl project delete <id>
 ```
 
 Verify cleanup by re-listing. Confirm resources are gone.
@@ -110,21 +105,23 @@ Verify cleanup by re-listing. Confirm resources are gone.
 
 ### Phase 6: Report
 
-Produce two outputs:
+Write findings to `DX.md` in the current working directory.
 
 #### Narrative (primary)
 
 Write as a first-person walkthrough. Cover the full session chronologically:
 
-> "I started by checking what commands were available. Running `./amctl --help` showed..."
+> "I started by checking what commands were available. Running `amctl --help` showed..."
 
 Weave observations naturally into the story. Call out friction, confusion, delight, and suggestions as they arise. The narrative should read like a UX researcher's session notes.
 
 #### Findings Table (supplementary)
 
-| Category | Severity | Command | Finding | Suggested Fix |
+Prioritize every finding as P0, P1, or P2 (see Severity Levels below).
+
+| Priority | Category | Command | Finding | Suggested Fix |
 |----------|----------|---------|---------|---------------|
-| ... | ... | ... | ... | ... |
+| P0 | ... | ... | ... | ... |
 
 ## Evaluation Dimensions
 
@@ -162,9 +159,9 @@ Assess every command against all five:
 
 ## Severity Levels
 
-- **cosmetic** — nitpick, no real user confusion
-- **minor** — noticeable friction, workaround obvious
-- **major** — would block or seriously confuse a new user
+- **P0** — blocks the workflow or causes data loss; new user cannot proceed
+- **P1** — significant friction or confusion; workaround exists but isn't obvious
+- **P2** — cosmetic or minor polish; noticeable but not blocking
 
 ## Behavior Rules
 
@@ -172,5 +169,7 @@ Assess every command against all five:
 - **Stop on blockers** — if context setup fails, report immediately
 - **Adapt** — if a command doesn't exist, skip it and note the gap
 - **No login** — assume authenticated
+- **Note friction in real time** — every unexpected prompt, confusing error, missing flag, or silent success is a finding; capture it immediately with raw output before moving on
+- **No source diving** — do not read internal source code unless a specific bug demands it; test only via the CLI surface
 - **Be thorough** — exercise every flag, every output mode, every edge case you can think of
 - **Compare** — when evaluating consistency, compare every command group against each other
