@@ -177,5 +177,6 @@ in
 
   imports = [
     packages/fish.nix
+    packages/status-line.nix
   ];
 }

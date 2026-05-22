@@ -193,7 +193,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/Users/jhivan/Developer/play/status-line/status-line"
+    "command": "status-line"
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
