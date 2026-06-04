@@ -10,6 +10,23 @@ This repository contains my personal [home-manager](https://github.com/nix-commu
 - **Editor**: Neovim, Zed, Micro
 - **Tools**: kubectl, helm, kind, gh, bat, zoxide
 
+## Skills
+
+Agent skills live in [`skills/`](skills/). Install the publicly-exposed ones into any project or globally with the [`skills`](https://github.com/vercel-labs/skills) CLI:
+
+```bash
+npx skills add jhivandb/.dotfiles        # into the current project (.claude/skills)
+npx skills add jhivandb/.dotfiles -g     # globally (~/.claude/skills)
+npx skills add jhivandb/.dotfiles -l     # list exposed skills without installing
+```
+
+Exposed skills:
+
+- `am-ship` — git workflow and commit conventions for the agent-manager repo
+- `review-plan` — critique a markdown plan, spec, or design doc grounded in the codebase it touches
+
+Other skills in `skills/` are kept internal (`metadata.internal: true`) and are skipped by `npx skills add`. They're still active locally via the home-manager symlink.
+
 ## Testing with Docker
 
 A Docker container is provided to test the configuration in an isolated Ubuntu environment with Nix and home-manager pre-installed.

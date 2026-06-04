@@ -1,6 +1,8 @@
 ---
 name: jhivan-prose-style
 description: Style guide for prose written on Jhivan's behalf. Trigger when drafting blog posts, articles, essays, emails, or any first-person/peer-voice prose for Jhivan. Cuts common AI writing patterns he dislikes.
+metadata:
+  internal: true
 ---
 
 # Writing Style for Jhivan

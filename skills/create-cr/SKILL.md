@@ -5,6 +5,8 @@ argument-hint: [title]
 disable-model-invocation: false
 allowed-tools: Bash(gh api repos/wso2-enterprise/choreo/contents/.github/ISSUE_TEMPLATE/*)
 context: fork
+metadata:
+  internal: true
 ---
 
 # Create Application Change Request

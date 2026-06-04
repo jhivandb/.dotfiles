@@ -1,6 +1,8 @@
 ---
 name: am-ops
 description: Operate the amctl CLI to manage agent-manager resources. Use when the user asks to create, deploy, build, delete, or inspect projects and agents, set up context/linking, or check build status. Triggers on requests like "create a project", "deploy an agent", "check build logs", "link this directory", "list my agents".
+metadata:
+  internal: true
 ---
 
 # am-ops — Operating amctl

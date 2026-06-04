@@ -1,6 +1,8 @@
 ---
 name: am-dx
 description: Use when testing the amctl CLI developer experience. Autonomously exercises the full agent dev workflow against a running local environment, evaluates UX across five dimensions, and produces a narrative report. Invoke explicitly via /am-dx.
+metadata:
+  internal: true
 ---
 
 # am-dx — CLI Developer Experience Testing
