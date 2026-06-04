@@ -1,23 +1,23 @@
 ---
 name: am-ship
-description: Git workflow and commit conventions for the agent-manager repo. Trigger when working inside the agent-manager repo or any git worktree whose common git dir is agent-manager (match on repo identity, not exact path) AND the task involves commits, commit messages, git history, pushing, shipping, or PRs. Also invoke explicitly via `/am-ship`.
+description: Git workflow and commit conventions for the agent-manager repo (canonical upstream wso2/agent-manager). Trigger when working in any clone or git worktree of agent-manager — identify by a git remote whose URL ends in /agent-manager, NOT by filesystem path or folder name — AND the task involves commits, commit messages, git history, pushing, shipping, or PRs. Also invoke explicitly via `/am-ship`.
 ---
 
 # am-ship — agent-manager git workflow
 
-Workflow skill for the `agent-manager` repo. Only applies inside `/Users/jhivan/Developer/agent-manager` and its linked worktrees (`docs-agent-manager`, `mcp-agent-manager`, etc. — anything pointing at the same repo).
+Workflow skill for the `agent-manager` repo. Applies to **any clone or linked worktree** of agent-manager, identified by its git remotes — a remote whose URL ends in `/agent-manager` (the canonical upstream is `wso2/agent-manager`). Independent of filesystem path, machine, and worktree folder name: worktrees may live anywhere (e.g. `/private/tmp/...`) and need not contain "agent-manager" in their name. The preflight script (step 1) confirms identity for you.
 
 ## Repo facts
 
-Three remotes:
+Remote *names* vary per clone — don't assume them. Run `git remote -v` and classify by URL:
 
-| Remote | URL | Push from this skill? |
+| Role | How to identify (by URL) | Push from this skill? |
 |---|---|---|
-| `origin` | `github.com/jhivandb/agent-manager` | YES — user's personal fork |
-| `sath` | `github.com/sathsaraniii/agent-manager` | only if user explicitly says "push to sath" |
-| `upstream` | `github.com/wso2/agent-manager` | **NEVER** — read-only canonical |
+| **Canonical upstream** | `…/wso2/agent-manager` (conventionally `upstream`) | **NEVER** — read-only canonical |
+| **Your fork** | your own remote, conventionally `origin` — URL is `<your-gh-user>/agent-manager` and not wso2 | YES — `git push -u origin HEAD` |
+| **Collaborator fork** | any other `…/agent-manager` remote (a teammate's fork) | only if the user explicitly names it |
 
-The `main` branch is configured to track `upstream/main`, so a plain `git push` from `main` would attempt to push to wso2. Treat `main` as never-push.
+`main` is a shared branch — treat it as **never-push** and always work on a feature branch. Depending on the clone, `main` may track the wso2 upstream *or* your fork; don't rely on it. The preflight script reports the actual tracking ref and refuses any push whose effective target isn't your own fork.
 
 ## Workflow
 
@@ -25,22 +25,25 @@ Run sequentially. Stop and ask if anything is ambiguous.
 
 ### 1. Verify the push target is safe
 
-Run the bundled preflight script — it gates on `upstream` URL, branch name, tracking ref, and `pushRemote` config in one shot, and exits 2 on any violation:
+Run the bundled preflight script. It identifies the repo by remote URL, then checks branch name, tracking ref, and push config in one shot. The script lives in this skill's own directory — use the absolute path shown as **"Base directory for this skill"** in the header when this skill loads:
 
 ```bash
-/Users/jhivan/.claude/skills/am-ship/scripts/preflight.sh
+"<skill-base-dir>/scripts/preflight.sh"
 ```
 
-It refuses if: branch is `main`, tracking ref starts with `upstream/`, or push remote is `upstream`. On failure, tell the user the branch would push to `wso2/agent-manager` and ask which remote+branch they want (almost always `origin/<feature-branch>`). Offer to `git switch -c <new-branch>` off the current commit.
+Exit codes: `0` = safe; `2` = a push-safety violation (read the `WARN:` lines); `1` = can't run / not the agent-manager repo.
 
-If the script can't run (different host, missing path), fall back to:
+It refuses if: branch is `main`; the canonical upstream (`wso2/agent-manager`) is the effective push target; or a bare `git push` would reach anything other than your fork (a collaborator's fork, a raw-URL tracking config, etc.). On failure, tell the user where the bare push would land and ask which remote+branch they want (almost always `origin/<feature-branch>`). Offer to `git switch -c <new-branch>` off the current commit.
+
+If the script can't be located or run (other host, different install), fall back to:
 
 ```bash
+git remote -v                                                        # which remote is wso2 vs your fork
 git rev-parse --abbrev-ref HEAD
 git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null || echo "(no upstream tracking set)"
 ```
 
-…and apply the same refusal rules manually.
+…and apply the same rules manually: never push to the wso2 remote; push only to your own fork.
 
 If no upstream tracking is set, that's fine — step 6 will set it to `origin/<branch>` with `-u`.
 
@@ -95,7 +98,7 @@ Sample the prevailing style first:
 git log --pretty=format:"%s" --no-merges -30
 ```
 
-Default commit-message style in this repo (and the user's own commits are 100% this):
+Default commit-message style in this repo (the history is consistently this — sample with the command above to confirm):
 - Imperative mood verb first
 - **First letter capitalized**
 - **No trailing period**
@@ -120,22 +123,23 @@ git commit -m "<message>"
 
 If pre-commit hooks fail, fix the issue and create a NEW commit — never `--amend` and never `--no-verify`.
 
-### 6. Push to the user's fork
+### 6. Push to your fork
 
 ```bash
 git push -u origin HEAD
 ```
 
-The `-u` is important: it pins the branch to `origin/<branch>` so future `git push` calls don't fall back to whatever upstream-tracking config was inherited. This is the structural defense against the "main tracks upstream" trap.
+The `-u` is important: it pins the branch to `origin/<branch>` so future `git push` calls don't fall back to whatever tracking config was inherited (a `main` that tracks the wso2 upstream, or a branch whose remote is a teammate's fork). This is the structural defense behind the preflight check.
 
-If the user explicitly asks to push to `sath`, use `git push -u sath HEAD`. Never `git push upstream`. If somehow on `main`, switch to a feature branch first (`git switch -c <name>`) — do not push `main` to any remote.
+If the user explicitly asks to push to a collaborator's fork, push to that remote by name (`git push -u <remote> HEAD`). Never push to the wso2 remote. If somehow on `main`, switch to a feature branch first (`git switch -c <name>`) — do not push `main` to any remote.
 
 ### 7. PR (only when the user asks)
 
-PRs target `wso2/agent-manager` (the upstream). Use:
+PRs target `wso2/agent-manager` (the canonical upstream). The `--head` owner is your fork's GitHub user — derive it from `origin` instead of hardcoding it:
 
 ```bash
-gh pr create --repo wso2/agent-manager --base main --head jhivandb:<branch> --title "..." --body "..."
+owner=$(git remote get-url origin | sed -E 's#.*[:/]([^/]+)/agent-manager(\.git)?$#\1#')
+gh pr create --repo wso2/agent-manager --base main --head "$owner:<branch>" --title "..." --body "..."
 ```
 
 The repo has a heavy `pull_request_template.md` with these sections: Purpose, Goals, Approach, User stories, Release note, Documentation, Training, Certification, Marketing, Automation tests (Unit + Integration), Security checks (3 yes/no boxes), Samples, Related PRs, Migrations, Test environment, Learning. Fill the sections that apply; for the rest write `N/A` with a one-line reason. Don't drop sections.
@@ -144,7 +148,7 @@ For the Security checks block, the three questions are literal — answer each y
 
 ## Anti-patterns to avoid
 
-- `git push` from `main` (it's tracking `upstream/main` → wso2).
+- Bare `git push` from `main`, or from any branch whose tracking points at the wso2 upstream or a teammate's fork — always push explicitly with `git push -u origin HEAD`.
 - Running a sub-Makefile target without `cd`ing — the top-level Makefile delegates with `cd agent-manager-service && make ...`; mirror that pattern.
 - Adding `Co-Authored-By` / Claude trailers (zero existing commits use them).
 - `git commit --amend` or `git push --force` on a branch already pushed, without asking.
@@ -155,10 +159,11 @@ For the Security checks block, the three questions are literal — answer each y
 ## Quick command reference
 
 ```bash
-# Safety check (preferred)
-/Users/jhivan/.claude/skills/am-ship/scripts/preflight.sh
+# Safety check (preferred) — script is in this skill's base directory
+"<skill-base-dir>/scripts/preflight.sh"
 
 # Safety check (fallback)
+git remote -v
 git rev-parse --abbrev-ref HEAD
 git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null
 
