@@ -7,7 +7,7 @@ This repository contains my personal [home-manager](https://github.com/nix-commu
 
 - **Shell**: Fish with oh-my-posh (amro theme)
 - **Terminal**: Kitty with Catppuccin Mocha theme
-- **Editor**: Neovim, Zed, Micro
+- **Editor**: Zed, Micro
 - **Tools**: kubectl, helm, kind, gh, bat, zoxide
 
 ## Skills

@@ -78,7 +78,6 @@ in
     pkgs.tree-sitter
     pkgs.nixd
     pkgs.jdk
-    pkgs.neovim
   ]
   ++ [
     # # It is sometimes useful to fine-tune packages, for example, by applying
@@ -168,8 +167,6 @@ in
     ".agents/skills".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/skills";
   };
-  xdg.configFile."nvim".source =
-    config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/nvim";
   home.sessionVariables = {
     # EDITOR = "emacs";
     HOME_MANAGER_CONFIG = "${config.home.homeDirectory}/.dotfiles/home-manager/home.nix";
