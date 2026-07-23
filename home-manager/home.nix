@@ -128,11 +128,6 @@ in
       enableFishIntegration = true;
       configFile = ./shrewd_minimal.omp.json;
     };
-    kitty = {
-      enable = true;
-      themeFile = "Catppuccin-Mocha";
-      shellIntegration.enableFishIntegration = true;
-    };
     git = {
       enable = true;
       ignores = [
