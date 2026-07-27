@@ -176,16 +176,18 @@
       "Read",
       "WebSearch",
       "WebFetch"
-    ]
+    ],
+    "defaultMode": "auto"
   },
-  "model": "opus[1m]",
+  "model": "opus",
   "hooks": {
-    "UserPromptSubmit": [
+    "PreToolUse": [
       {
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/hooks/skill-forced-eval-hook.sh"
+            "command": "rtk hook claude"
           }
         ]
       }
@@ -198,10 +200,23 @@
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
+    "claude-md-management@claude-plugins-official": true,
+    "gopls-lsp@claude-plugins-official": true
+  },
+  "extraKnownMarketplaces": {
+    "wso2-agent-skills": {
+      "source": {
+        "source": "github",
+        "repo": "wso2/agent-skills"
+      }
+    }
   },
   "effortLevel": "high",
+  "autoMemoryEnabled": false,
   "skipDangerousModePermissionPrompt": true,
+  "skipWorkflowUsageWarning": true,
+  "theme": "dark",
+  "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "deny": [
     "Bash(rm -rf /*)",
@@ -323,6 +338,5 @@
     "Bash(exec < /dev/tcp/:*)",
     "Bash(exec > /dev/tcp/:*)",
     "Bash(exec 3<>/dev/tcp/:*)"
-  ],
-  "agentPushNotifEnabled": true
+  ]
 }
