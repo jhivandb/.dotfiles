@@ -2,48 +2,7 @@
 # https://nix-community.github.io/home-manager/options.xhtml
 
 { config, pkgs, ... }:
-let
 
-  # Helper function to create out-of-store symlinks for a directory
-  # Usage: mkHomeSymlinks "claude" creates ~/.claude/* -> ./claude/*
-  # NOTE: This requires ~/.dotfiles to exist as a symlink to the actual dotfiles location.
-  #       e.g., ln -s ~/Developer/.dotfiles ~/.dotfiles
-  mkHomeSymlinks =
-    dirName:
-    let
-      inherit (config.lib.file) mkOutOfStoreSymlink;
-
-      # Absolute path for symlink targets (outside Nix store)
-      absPath = "${config.home.homeDirectory}/.dotfiles/home-manager/${dirName}";
-
-      # Nix path for reading directory contents
-      nixPath = ./. + "/${dirName}";
-
-      # Recursively find all files in a directory
-      readDirRecursive =
-        relPath: currentPath:
-        currentPath
-        |> builtins.readDir
-        |> builtins.attrNames
-        |> map (
-          name:
-          let
-            entryType = (builtins.readDir currentPath).${name};
-            newRelPath = if relPath == "" then name else "${relPath}/${name}";
-            newCurrentPath = "${currentPath}/${name}";
-          in
-          if entryType == "directory" then readDirRecursive newRelPath newCurrentPath else [ newRelPath ]
-        )
-        |> builtins.concatLists;
-
-      # Create home.file entry for each file
-      mkEntry = filePath: {
-        name = ".${dirName}/${filePath}";
-        value.source = mkOutOfStoreSymlink "${absPath}/${filePath}";
-      };
-    in
-    readDirRecursive "" nixPath |> map mkEntry |> builtins.listToAttrs;
-in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -80,6 +39,7 @@ in
     pkgs.jdk
   ]
   ++ [
+
     # # It is sometimes useful to fine-tune packages, for example, by applying
     # # overrides. You can do that directly here, just don't forget the
     # # parentheses. Maybe you want to install Nerd Fonts with a limited number of
@@ -156,11 +116,18 @@ in
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
-  home.file = mkHomeSymlinks "claude" // {
+  home.file = {
+    ".claude/settings.json".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/claude/settings.json";
+    ".claude/hooks".source =
+      config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/claude/hooks";
     ".claude/skills".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/skills";
     ".agents/skills".source =
       config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/skills";
+    ".config/ghostty/config" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/config/ghostty/config";
+    };
   };
   home.sessionVariables = {
     # EDITOR = "emacs";
