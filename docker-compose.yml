@@ -1,9 +1,0 @@
-services:
-  home-manager-test:
-    build: .
-    container_name: home-manager-ubuntu
-    volumes:
-      - ./home-manager:/home/jhivandb/.config/home-manager/:ro
-    stdin_open: true
-    tty: true
-    command: /bin/bash -l
