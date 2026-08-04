@@ -4,3 +4,6 @@ background-opacity = 0.8
 background-blur = true
 
 font-family = FiraCode Nerd Font
+
+
+keybind = ctrl+shift+w=close_surface
