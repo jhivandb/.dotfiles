@@ -40,7 +40,7 @@ func TestCalculateTokenUsageCountsLatestAssistantMessage(t *testing.T) {
 
 	got := calculateTokenUsage(api.InputData{TranscriptPath: path})
 
-	if want := 279843; got != want {
+	if want := 279387; got != want {
 		t.Errorf("calculateTokenUsage() = %d, want %d", got, want)
 	}
 }
@@ -53,7 +53,7 @@ func TestCalculateTokenUsageSurvivesLinesOverScannerCap(t *testing.T) {
 
 	got := calculateTokenUsage(api.InputData{TranscriptPath: path})
 
-	if want := 279843; got != want {
+	if want := 279387; got != want {
 		t.Errorf("calculateTokenUsage() = %d, want %d — an oversized line must not zero the count", got, want)
 	}
 }
@@ -68,8 +68,18 @@ func TestCalculateTokenUsageIgnoresTrailingNonAssistantEntries(t *testing.T) {
 
 	got := calculateTokenUsage(api.InputData{TranscriptPath: path})
 
-	if want := 279843; got != want {
+	if want := 279387; got != want {
 		t.Errorf("calculateTokenUsage() = %d, want %d", got, want)
+	}
+}
+
+func TestCalculateTokenUsageExcludesOutputTokens(t *testing.T) {
+	withoutOutput := writeTranscript(t, assistantLine(2, 300, 279085, 0))
+	withOutput := writeTranscript(t, assistantLine(2, 300, 279085, 50_000))
+
+	if got, want := calculateTokenUsage(api.InputData{TranscriptPath: withOutput}),
+		calculateTokenUsage(api.InputData{TranscriptPath: withoutOutput}); got != want {
+		t.Errorf("calculateTokenUsage() = %d with output tokens, %d without — output tokens are not context", got, want)
 	}
 }
 
