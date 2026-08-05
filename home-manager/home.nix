@@ -128,6 +128,9 @@
     ".config/ghostty/config" = {
       source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/config/ghostty/config";
     };
+    ".config/zed/settings.json" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/config/zed/settings.json";
+    };
   };
   home.sessionVariables = {
     # EDITOR = "emacs";
