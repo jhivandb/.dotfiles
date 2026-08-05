@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
 
@@ -10,15 +10,17 @@
       enable = true;
       interactiveShellInit = ''
         set fish_greeting # Disable greeting
-
-        # Homebrew setup
+      ''
+      # Guarded per platform: on macOS, stat'ing /home wakes automountd (~20ms/shell).
+      + lib.optionalString pkgs.stdenv.isLinux ''
         if test -d /home/linuxbrew/.linuxbrew
             eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
         end
+      ''
+      + lib.optionalString pkgs.stdenv.isDarwin ''
         if test -d /opt/homebrew
             eval "$(/opt/homebrew/bin/brew shellenv)"
         end
-
       '';
 
       plugins = [
