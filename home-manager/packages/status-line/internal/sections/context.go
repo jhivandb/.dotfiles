@@ -25,9 +25,9 @@ func (ctx *Context) Render() string {
 	return fmt.Sprintf("%s%s", contextColor, formatSize(tokens))
 }
 
-// calculateTokenUsage reads the transcript file from end to beginning,
-// looking for the most recent assistant message with token usage information.
-// Returns the total token count (input + cache creation + cache read + output tokens).
+// calculateTokenUsage scans the transcript for the most recent assistant message
+// carrying token usage, and returns its total (input + cache creation + cache
+// read + output tokens).
 func calculateTokenUsage(in api.InputData) int {
 	if in.TranscriptPath == "" {
 		return 0
@@ -39,42 +39,42 @@ func calculateTokenUsage(in api.InputData) int {
 	}
 	defer file.Close()
 
-	// Read all lines into a slice
-	var lines []string
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
-	}
-
-	if err := scanner.Err(); err != nil {
-		return 0
-	}
-
-	// Iterate from last line to first line
-	for i := len(lines) - 1; i >= 0; i-- {
-		line := strings.TrimSpace(lines[i])
-		if line == "" {
-			continue
+	// A single transcript line holds a whole tool result and regularly runs past
+	// bufio.Scanner's 64KB line cap, so read with a Reader that grows instead.
+	reader := bufio.NewReader(file)
+	latest := 0
+	for {
+		line, readErr := reader.ReadString('\n')
+		if total, ok := assistantTokenTotal(line); ok {
+			latest = total
 		}
-
-		var entry api.TranscriptEntry
-		if err := json.Unmarshal([]byte(line), &entry); err != nil {
-			continue // Skip invalid JSON lines
-		}
-
-		// Check if this line contains token usage information
-		if entry.Type == "assistant" {
-			usage := entry.Message.Usage
-			// Check if usage information is present (at least one field is non-zero)
-			if usage.InputTokens > 0 || usage.CacheCreationInputTokens > 0 ||
-				usage.CacheReadInputTokens > 0 || usage.OutputTokens > 0 {
-				return usage.InputTokens + usage.CacheCreationInputTokens +
-					usage.CacheReadInputTokens + usage.OutputTokens
-			}
+		if readErr != nil {
+			return latest
 		}
 	}
+}
 
-	return 0
+// assistantTokenTotal reports a transcript line's combined token count, and
+// whether the line was an assistant message carrying usage at all.
+func assistantTokenTotal(line string) (int, bool) {
+	line = strings.TrimSpace(line)
+	if line == "" {
+		return 0, false
+	}
+
+	var entry api.TranscriptEntry
+	if err := json.Unmarshal([]byte(line), &entry); err != nil {
+		return 0, false
+	}
+	if entry.Type != "assistant" {
+		return 0, false
+	}
+
+	usage := entry.Message.Usage
+	total := usage.InputTokens + usage.CacheCreationInputTokens +
+		usage.CacheReadInputTokens + usage.OutputTokens
+
+	return total, total > 0
 }
 
 func formatSize(size int) string {
@@ -83,7 +83,7 @@ func formatSize(size int) string {
 	)
 
 	switch {
-	case size >= K+1000:
+	case size >= K:
 		return fmt.Sprintf("%.1fK", float64(size)/K)
 	default:
 		return fmt.Sprintf("%d", size)
