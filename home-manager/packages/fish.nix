@@ -62,10 +62,6 @@ in
           src = pkgs.fishPlugins.fish-you-should-use.src;
         }
         {
-          name = "done";
-          src = pkgs.fishPlugins.done.src;
-        }
-        {
           name = "bass";
           src = pkgs.fishPlugins.bass.src;
         }
