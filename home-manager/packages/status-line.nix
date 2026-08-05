@@ -7,7 +7,7 @@
       version = "0.1.0";
       src = ./status-line;
       vendorHash = null;
-      doCheck = false;
+      nativeCheckInputs = [ pkgs.git ];
     })
   ];
 }
