@@ -2,9 +2,7 @@ package sections
 
 import (
 	"fmt"
-	"os"
 	"os/exec"
-	"path/filepath"
 	"strings"
 
 	"github.com/jhivandb/status-line/internal/api"
@@ -31,14 +29,7 @@ func getGitBranch(in api.InputData) string {
 		return "No Git"
 	}
 
-	// Check if directory exists
-	if _, err := os.Stat(workDir); os.IsNotExist(err) {
-		return "No Git"
-	}
-
-	// Check if it's a git repository by looking for .git directory
-	gitDir := filepath.Join(workDir, ".git")
-	if _, err := os.Stat(gitDir); os.IsNotExist(err) {
+	if !isInsideGitRepo(workDir) {
 		return "No Git"
 	}
 
@@ -58,6 +49,16 @@ func getGitBranch(in api.InputData) string {
 	}
 
 	return fmt.Sprintf("\uf09b \ue0a0%s", branch)
+}
+
+// isInsideGitRepo reports whether workDir sits anywhere within a git work tree.
+// A .git entry exists only at the repo root, so asking git itself is what makes
+// this hold true from subdirectories and worktrees alike.
+func isInsideGitRepo(workDir string) bool {
+	cmd := exec.Command("git", "rev-parse", "--git-dir")
+	cmd.Dir = workDir
+
+	return cmd.Run() == nil
 }
 
 // getGitBranchFallback tries alternative methods to get git branch info
