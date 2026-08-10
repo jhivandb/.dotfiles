@@ -179,14 +179,14 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "fable",
   "statusLine": {
     "type": "command",
     "command": "status-line"
   },
   "enabledPlugins": {
     "code-simplifier@claude-plugins-official": true,
-    "superpowers@claude-plugins-official": false,
+    "superpowers@claude-plugins-official": true,
     "claude-md-management@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true
   },
@@ -199,7 +199,7 @@
     }
   },
   "effortLevel": "high",
-  "autoMemoryEnabled": false,
+  "autoMemoryEnabled": true,
   "skipDangerousModePermissionPrompt": true,
   "skipWorkflowUsageWarning": true,
   "theme": "dark",
