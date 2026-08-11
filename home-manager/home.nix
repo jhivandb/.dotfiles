@@ -24,11 +24,9 @@
     pkgs.micro
     pkgs.nerd-fonts.fira-code
     pkgs.nil
-    pkgs.go
     pkgs.podman
     pkgs.colima
     pkgs.mkcert
-    pkgs.protobuf
     pkgs.fd
     pkgs.fzf
     pkgs.jq
