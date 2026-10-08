@@ -35,6 +35,8 @@
     pkgs.tree-sitter
     pkgs.nixd
     pkgs.jdk
+    # The nixpkgs channel only has 1.26rc1.
+    (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz") { }).go_1_26
   ]
   ++ [
 
