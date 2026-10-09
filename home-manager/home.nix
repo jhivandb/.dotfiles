@@ -3,6 +3,17 @@
 
 { config, pkgs, ... }:
 
+let
+  # Fish gets the same environment from packages/fish.nix and its plugins.
+  posixShellEnv = ''
+    . "${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh"
+    if [ -z "''${NIX_PROFILES-}" ] && [ -e "${config.home.profileDirectory}/etc/profile.d/nix.sh" ]; then
+      . "${config.home.profileDirectory}/etc/profile.d/nix.sh"
+    fi
+    export SDKMAN_DIR="$HOME/.sdkman"
+    [ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ] && . "$SDKMAN_DIR/bin/sdkman-init.sh"
+  '';
+in
 {
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -61,27 +72,13 @@
     };
     bash = {
       enable = true;
-      initExtra = ''
-        export SDKMAN_DIR="$HOME/.sdkman"
-        [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
-        if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${BASH_EXECUTION_STRING} ]]
-        then
-          shopt -q login_shell && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-        fi
-      '';
+      # bashrcExtra runs before the interactive-only guard, so non-interactive
+      # shells (Claude's Bash tool, scripts) get the environment too.
+      bashrcExtra = posixShellEnv;
     };
     zsh = {
       enable = true;
-      initContent = ''
-        export SDKMAN_DIR="$HOME/.sdkman"
-        [[ -s "$SDKMAN_DIR/bin/sdkman-init.sh" ]] && source "$SDKMAN_DIR/bin/sdkman-init.sh"
-        if [[ $(ps -p $PPID -o comm=) != "fish" && -z ''${ZSH_EXECUTION_STRING} ]]
-        then
-          [[ -o login ]] && LOGIN_OPTION='--login' || LOGIN_OPTION=""
-          exec ${pkgs.fish}/bin/fish $LOGIN_OPTION
-        fi
-      '';
+      envExtra = posixShellEnv;
     };
     oh-my-posh = {
       enable = true;
