@@ -28,11 +28,15 @@ func main() {
 	gitSection := &sections.Git{In: inputData}
 	contextSection := &sections.Context{In: inputData}
 
-	sectionList := []api.Section{pathSection, gitSection, contextSection}
+	sectionList := []api.Section{&sections.SSH{}, pathSection, gitSection, contextSection}
 
 	output := api.ColorReset
 	for _, section := range sectionList {
-		output += section.Render() + api.ColorReset + " "
+		rendered := section.Render()
+		if rendered == "" {
+			continue
+		}
+		output += rendered + api.ColorReset + " "
 	}
 
 	fmt.Println(output)

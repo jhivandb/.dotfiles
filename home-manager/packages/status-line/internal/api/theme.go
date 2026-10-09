@@ -9,4 +9,5 @@ const (
 	ColorPink       = "\033[38;2;205;66;119m" // #CD4277
 	ColorBlue       = "\033[38;2;12;160;216m" // #0CA0D8
 	ColorTeal       = "\033[38;2;20;165;174m" // #14A5AE
+	ColorYellow     = "\033[38;2;255;215;0m"  // #FFD700
 )

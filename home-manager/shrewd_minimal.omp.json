@@ -13,6 +13,15 @@
           "properties": {
             "cache_duration": "none"
           },
+          "template": "{{ if .SSHSession }}\ueb3a {{ .HostName }} {{ end }}",
+          "foreground": "#FFD700",
+          "type": "session",
+          "style": "plain"
+        },
+        {
+          "properties": {
+            "cache_duration": "none"
+          },
           "template": "\ueb99 {{ .UserName }}",
           "foreground": "#45F1C2",
           "type": "session",
