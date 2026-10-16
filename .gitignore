@@ -1,1 +1,5 @@
-result
+# Installed and overwritten by `herdr integration`; not hand-maintained.
+home-manager/claude/hooks/herdr-agent-state.sh
+
+# Skill caches synced by the Claude app.
+skills/synced/
