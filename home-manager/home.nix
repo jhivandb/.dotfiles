@@ -127,6 +127,9 @@ in
     ".config/zed/settings.json" = {
       source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/config/zed/settings.json";
     };
+    ".config/herdr/config.toml" = {
+      source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.dotfiles/home-manager/config/herdr/config.toml";
+    };
   };
   home.sessionVariables = {
     # EDITOR = "emacs";
