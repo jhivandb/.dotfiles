@@ -36,7 +36,6 @@ in
     pkgs.nerd-fonts.fira-code
     pkgs.nil
     pkgs.podman
-    pkgs.colima
     pkgs.mkcert
     pkgs.fd
     pkgs.fzf
