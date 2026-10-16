@@ -136,5 +136,6 @@ in
   imports = [
     packages/fish.nix
     packages/status-line.nix
+    packages/amp-console-remote.nix
   ];
 }
