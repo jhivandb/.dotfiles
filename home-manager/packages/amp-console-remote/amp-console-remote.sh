@@ -135,10 +135,8 @@ template_vars=" $(grep -oE '\$[A-Z_][A-Z0-9_]*' "$template" | tr -d '$' | sort -
 
 # Corepack picks pnpm from the cwd's package.json, so run from console/ to get its pinned version.
 cd "$console"
-if [[ ! -d node_modules ]]; then
-  echo "==> Installing console dependencies"
-  pnpm install --frozen-lockfile
-fi
+echo "==> Syncing console dependencies"
+pnpm install --frozen-lockfile
 
 if ! curl -s -o /dev/null http://localhost:9000/; then
   echo "warning: AMS is not answering on localhost:9000 through the tunnel" >&2
