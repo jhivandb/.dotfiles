@@ -5,8 +5,9 @@ usage() {
 Usage: amp-console-remote [-H host] [-w worktree] [host] [worktree] [-- ssh-option...]
 
 Runs <worktree>/console on http://localhost:3000, backed by the full setup on the
-remote host through SSH tunnels. The runtime config is rendered from the remote
-console container's env, so it follows whatever version the host is running.
+remote host through SSH tunnels. The runtime config comes from the remote checkout's
+console .env.development(.local), so it follows whatever version the host is running;
+keys it lacks fall back to the worktree's own .env.development.
 
   host           ssh destination: user@host or a ~/.ssh/config alias
                  (default: $AMP_REMOTE_HOST or lyuda@agent-runtime-2)
@@ -18,7 +19,7 @@ Examples:
   amp-console-remote jhivandb@shrewd-cachy-01
   amp-console-remote jhivandb@shrewd-cachy-01 ~/src/agent-manager -- -p 2222
 
-Ctrl-C stops the console, closes the tunnels and restores config.js.
+Ctrl-C stops the console and closes the tunnels.
 EOF
 }
 
@@ -49,8 +50,10 @@ host="${host:-${AMP_REMOTE_HOST:-lyuda@agent-runtime-2}}"
 worktree="$(git -C "${worktree_arg:-.}" rev-parse --show-toplevel)"
 console="$worktree/console"
 template="$console/apps/web-ui/public/config.template.js"
-config="$console/apps/web-ui/public/config.js"
-[[ -f "$template" ]] || { echo "not an agent-manager worktree: $worktree" >&2; exit 1; }
+[[ -f "$console/apps/web-ui/.env.development" ]] || {
+  echo "not an agent-manager worktree with the native console dev server: $worktree" >&2
+  exit 1
+}
 
 # Thunder's discovery doc hardcodes :8080, so every port must map 1:1.
 ports=(
@@ -78,11 +81,19 @@ if ((${#busy[@]})); then
   exit 1
 fi
 
-echo "==> Reading console env from $host"
-remote_env="$(ssh "${ssh_opts[@]}" "$host" docker exec agent-manager-console env)"
+echo "==> Reading console config from $host"
+# Piped to sh so the remote login shell (fish on some hosts) never parses it.
+if ! remote_env="$(ssh "${ssh_opts[@]}" "$host" sh -s <<'EOF'
+compose_dir="$(docker inspect --format '{{index .Config.Labels "com.docker.compose.project.working_dir"}}' agent-manager-service)" || exit 1
+cd "$compose_dir/../console/apps/web-ui" || exit 1
+cat .env.development
+cat .env.development.local 2>/dev/null || true
+EOF
+)"; then
+  echo "warning: could not read the remote console config; using the worktree's .env.development" >&2
+  remote_env=""
+fi
 
-workdir="$(mktemp -d)"
-cp "$config" "$workdir/config.js.orig"
 tunnel_pid=""
 
 cleanup() {
@@ -95,9 +106,7 @@ cleanup() {
       kill "${tunnel_children[@]}" 2>/dev/null || true
     fi
   fi
-  cp "$workdir/config.js.orig" "$config"
-  rm -rf "$workdir"
-  echo "==> Tunnels closed, config.js restored"
+  echo "==> Tunnels closed"
 }
 trap cleanup EXIT INT TERM HUP
 
@@ -121,17 +130,19 @@ for _ in $(seq 20); do
   sleep 1
 done
 
-echo "==> Rendering config.js"
+# The dev server fills config.js from .env.development with the process env on top, so export the remote's values.
 template_vars=" $(grep -oE '\$[A-Z_][A-Z0-9_]*' "$template" | tr -d '$' | sort -u | tr '\n' ' ') "
-(
-  # Only the template's vars, so the container's PATH/HOME never leak in.
-  while IFS='=' read -r key value; do
-    if [[ "$template_vars" == *" $key "* ]]; then
-      export "$key=$value"
-    fi
-  done <<<"$remote_env"
-  envsubst <"$template" >"$config"
-)
+while IFS= read -r line; do
+  [[ "$line" =~ ^([A-Z_][A-Z0-9_]*)=(.*)$ ]] || continue
+  key="${BASH_REMATCH[1]}"
+  value="${BASH_REMATCH[2]}"
+  # Only the template's vars, so nothing else from the remote leaks into the local env.
+  [[ "$template_vars" == *" $key "* ]] || continue
+  if [[ "$value" =~ ^\"(.*)\"$ || "$value" =~ ^\'(.*)\'$ ]]; then
+    value="${BASH_REMATCH[1]}"
+  fi
+  export "$key=$value"
+done <<<"$remote_env"
 
 # Corepack picks pnpm from the cwd's package.json, so run from console/ to get its pinned version.
 cd "$console"
@@ -143,4 +154,4 @@ if ! curl -s -o /dev/null http://localhost:9000/; then
 fi
 
 echo "==> Console: http://localhost:3000  (backed by $host)"
-pnpm run dev --host 127.0.0.1 --port 3000 --strictPort
+pnpm run dev --host 127.0.0.1
