@@ -27,7 +27,15 @@ in
     pkgs.bat
     pkgs.kubernetes-helm
     pkgs.kubectx
-    pkgs.gh
+    # Pinned ahead of nixpkgs; drop once nixpkgs-unstable ships >= 2.103.0.
+    (pkgs.gh.overrideAttrs (finalAttrs: prev: {
+      version = "2.103.0";
+      src = prev.src.override {
+        tag = "v${finalAttrs.version}";
+        hash = "sha256-unaFckDrXrSV/75/eUAUG4ZxMt+SgcY7GRgVwdNHARg=";
+      };
+      vendorHash = "sha256-o4p/SBVzlj+Qf3XNt5UzAbQUFrJHHOEjTCCE03+kvJs=";
+    }))
     pkgs.kind
     pkgs.kubectl
     pkgs.zoxide
@@ -45,8 +53,8 @@ in
     pkgs.tree-sitter
     pkgs.nixd
     pkgs.jdk
-    # The nixpkgs channel only has 1.26rc1.
-    (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz") { }).go_1_26
+    # Fetched from nixpkgs-unstable directly; the channel lags behind on Go releases.
+    (import (fetchTarball "https://github.com/NixOS/nixpkgs/archive/nixpkgs-unstable.tar.gz") { }).go_latest
   ]
   ++ [
 
