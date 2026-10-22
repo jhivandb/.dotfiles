@@ -14,7 +14,7 @@
     "claude-acp": {
       "type": "registry"
     }
-  }, 72f5b2a (Remove colima and Go and Enable completions and asp on zed)
+  },
   "cli_default_open_behavior": "new_window",
   "diff_view_style": "unified",
   "project_panel": {
